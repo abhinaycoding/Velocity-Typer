@@ -93,7 +93,7 @@ GSAP & Chart.js learning reference
 
 👤 Credits
 
-Developed with ❤️ by Abhinay Nachankar
+Developed with ❤️ by Abhinay Nachankar.
 
 ⭐ Support
 
