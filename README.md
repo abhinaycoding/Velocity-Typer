@@ -3,7 +3,7 @@ Neural Atmos Edition
 
 Velocity Typer is a high-performance, futuristic typing application built for developers and speed enthusiasts.
 Designed with a Neural Atmos aesthetic, it blends smooth GSAP animations, real-time performance analytics, and a glassmorphism UI to create an immersive typing experience.
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 🌌 Preview
 
 Dark. Fluid. Responsive. Built for flow.
@@ -16,7 +16,7 @@ Premium dark-mode interface
 Animated neural background blobs that react to typing intensity
 
 Glassmorphism panels for a futuristic, clean look
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 📊 Dynamic Performance Graph
 
 Detailed WPM Stream Graph after each session
@@ -30,13 +30,13 @@ Visualizes speed consistency and performance trends
 Shockwave Ripples – subtle glowing effects behind correctly typed characters
 
 Visual Shakes – haptic-style screen shake on errors for better muscle memory
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 👨‍💻 Developer-Centric Practice Modes
 
 JavaScript Mode – master syntax, brackets, and operators
 
 C++ Mode – train precision with symbols and structured patterns
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 🔒 Focus Guard Technology
 
 Custom focus-locking system
@@ -52,7 +52,7 @@ Neural Online
 Analyzing Process...
 
 Updates dynamically during typing sessions
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 🛠️ Tech Stack
 Layer	Technology
 Frontend	HTML5, CSS3, Tailwind CSS
@@ -61,7 +61,7 @@ Data Visualization	Chart.js
 Typography	JetBrains Mono, Plus Jakarta Sans
 Audio Feedback	Web Audio API (Oscillator-based haptic clicks)
 ⚙️ How to Run
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 No installation required — single-file neural application ⚡
 
 1️⃣ Clone the Repository
@@ -80,7 +80,7 @@ Choose a mode
 Lock in focus
 
 Enter the neural flow 🚀
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 🎯 Use Cases
 
 Typing speed training
@@ -90,11 +90,11 @@ Developer syntax practice
 UI/UX animation inspiration
 
 GSAP & Chart.js learning reference
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 👤 Credits
 
 Developed with ❤️ by Abhinay Nachankar.
-
+_________________________________________________________________________________________________________________________________________________________________________________________________
 ⭐ Support
 
 If you like this project:
