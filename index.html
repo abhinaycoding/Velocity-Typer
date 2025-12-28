@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity Typer</title>
+    
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVR4nGNgYGD4TyRmoFAvXfP/f4KYgU69DFAAcvT/f0KYgU49DAwM9NQLDAMAAMDvPzVv9pYVAAAAAElFTkSuQmCC">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@300;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; touch-action: manipulation; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        #bg-canvas { position: fixed; inset: 0; z-index: -1; filter: blur(80px); opacity: 0.6; }
+        .blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        
+        #test-area { position: relative; width: 100%; max-width: 900px; z-index: 10; height: 320px; display: flex; align-items: flex-start; overflow: hidden; }
+        #text-display { font-size: 1.4rem; color: rgba(255,255,255,0.1); text-align: left; width: 100%; position: relative; transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding-bottom: 50px; }
+        @media (min-width: 768px) { #text-display { font-size: 1.8rem; } }
+        
+        #text-display span { position: relative; display: inline-block; white-space: pre; transition: all 0.2s; vertical-align: top; }
+        
+        .correct { color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.8); }
+        .correct::after { content: ''; position: absolute; inset: 0; background: rgba(59, 130, 246, 0.2); border-radius: 50%; animation: ripple 0.6s ease-out; pointer-events: none; }
+        @keyframes ripple { from { transform: scale(1); opacity: 1; } to { transform: scale(4); opacity: 0; } }
+
+        .wrong { color: #ef4444; background: rgba(239, 68, 68, 0.2); border-radius: 4px; animation: shake 0.2s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        
+        #caret { position: absolute; width: 2px; background: #3b82f6; box-shadow: 0 0 20px #3b82f6; z-index: 5; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        #main-input { position: absolute; opacity: 0; pointer-events: none; }
+        .footer-controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 100; align-items: center; width: 95%; }
+        @media (min-width: 768px) { .footer-controls { bottom: 30px; flex-direction: row; width: auto; } }
+
+        .control-group { background: rgba(255,255,255,0.05); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+        .mode-btn { padding: 6px 12px; border-radius: 8px; font-size: 9px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); color: #666; cursor: pointer; transition: 0.3s; }
+        .mode-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .action-btn { padding: 10px 20px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;}
+        
+        /* FIXED SELECT COLOR GLITCH */
+        .limit-label { color: #9ca3af !important; opacity: 1 !important; } /* Gray-400 */
+        select.word-selector { 
+            background: transparent !important; 
+            color: #ffffff !important; 
+            opacity: 1 !important;
+            cursor: pointer; 
+            border: none; 
+            outline: none; 
+            padding: 2px 5px;
+            font-weight: bold;
+            appearance: none; 
+        }
+        select.word-selector option { background: #111; color: #fff; }
+
+        #report-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .report-card { width: 90%; max-width: 600px; padding: 40px; border-radius: 30px; text-align: center; }
+
+        /* FOOTER CREDITS */
+        .credits { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.2); transition: 0.3s; }
+        .credits a:hover { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center h-screen p-4">
+
+    <div id="bg-canvas">
+        <div class="blob w-96 h-96 bg-blue-600/40" style="top: 10%; left: 10%;"></div>
+        <div class="blob w-[30rem] h-[30rem] bg-purple-800/30" style="bottom: 10%; right: 15%;"></div>
+    </div>
+
+    <input type="text" id="main-input" autofocus autocomplete="off">
+
+    <div class="fixed top-6 flex flex-col items-center gap-4 w-full px-4">
+        <div class="flex flex-wrap justify-center gap-2 p-1 glass rounded-xl">
+            <button onclick="setMode('short')" id="btn-short" class="mode-btn active">Warmup</button>
+            <button onclick="setMode('javascript')" id="btn-javascript" class="mode-btn">JS</button>
+            <button onclick="setMode('cpp')" id="btn-cpp" class="mode-btn">C++</button>
+        </div>
+        
+        <div class="flex gap-10">
+            <div class="flex flex-col items-center">
+                <span class="text-[8px] tracking-[0.3em] text-blue-500 uppercase font-black">Streak</span>
+                <h2 id="streak-display" class="text-3xl font-black italic">0</h2>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-[8px] tracking-[0.3em] text-gray-500 uppercase font-black">Words Left</span>
+                <h2 id="words-left-display" class="text-3xl font-black italic">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <div id="test-area" class="glass p-8 md:p-12 rounded-[2rem] w-full border-white/5 shadow-2xl">
+        <div id="text-display" class="mono font-medium">
+            <div id="caret"></div>
+            <div id="words-wrapper"></div>
+        </div>
+    </div>
+
+    <div class="footer-controls">
+        <div class="control-group">
+            <span class="limit-label text-[9px] font-bold uppercase">Limit</span>
+            <select id="word-limit" class="word-selector focus-guard" onfocus="isUIActive = true" onblur="handleBlur()" onchange="init()">
+                <option value="25">25 Words</option>
+                <option value="50">50 Words</option>
+                <option value="100">100 Words</option>
+            </select>
+        </div>
+        
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex gap-3">
+                <button onclick="init()" class="action-btn glass hover:bg-white hover:text-black">Restart</button>
+                <button onclick="changeText()" class="action-btn glass border-blue-500/50 hover:bg-blue-600/20">Change Text</button>
+            </div>
+            <div class="credits">
+                Made by <a href="https://www.linkedin.com/in/abhinay-nachankar-36b3a7223/" target="_blank" class="focus-guard">Abhinay Nachankar</a>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <span class="text-[9px] font-bold text-gray-500 uppercase">Vol</span>
+            <input type="range" id="vol-slider" min="0" max="0.1" step="0.01" value="0.03" class="focus-guard" onfocus="isUIActive = true" onblur="handleBlur()">
+        </div>
+    </div>
+
+    <div id="report-modal">
+        <div class="glass report-card">
+            <h1 class="text-xs font-black tracking-[0.5em] text-blue-500 uppercase mb-6">Neural Performance Report</h1>
+            <div class="flex justify-around mb-8">
+                <div><h2 id="final-wpm" class="text-4xl font-black italic text-white">0</h2><p class="text-[10px] text-gray-500 uppercase">WPM</p></div>
+                <div><h2 id="final-acc" class="text-4xl font-black italic text-white">0%</h2><p class="text-[10px] text-gray-500 uppercase">Accuracy</p></div>
+            </div>
+            <div class="h-40 w-full mb-8">
+                <canvas id="wpmChart"></canvas>
+            </div>
+            <button onclick="init()" class="w-full py-4 bg-white text-black rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[0.98] transition-all">Next Stream</button>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const volSlider = document.getElementById('vol-slider');
+        const wordLimit = document.getElementById('word-limit');
+        const wordsLeftDisplay = document.getElementById('words-left-display');
+        let isUIActive = false, wpmHistory = [], chartInstance = null, timerInterval;
+
+        gsap.to(".blob", { x: "random(-100, 100)", y: "random(-100, 100)", duration: 15, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+        const library = {
+            short: ["The digital world moves at a lightning pace.", "Speed is the byproduct of accuracy.", "Neural networks process data streams."],
+            javascript: ["const data = await response.json();", "export default function App() {}", "arr.map(x => x * 2);"],
+            cpp: ["#include <iostream>", "int main() { return 0; }", "std::vector<int> v;"]
+        };
+
+        let currentMode = 'short', targetText = "", charIndex = 0, startTime = null, errors = 0, streak = 0;
+        const wrapper = document.getElementById('words-wrapper'), input = document.getElementById('main-input'), caret = document.getElementById('caret');
+
+        function handleBlur() { setTimeout(() => { isUIActive = false; input.focus(); }, 100); }
+
+        function setMode(m) {
+            currentMode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${m}`).classList.add('active');
+            init();
+        }
+
+        function generateText() {
+            const limit = parseInt(wordLimit.value);
+            const snippets = library[currentMode] || library.short;
+            let resultArr = [];
+            while(resultArr.join(" ").split(/\s+/).length < limit) {
+                resultArr.push(snippets[Math.floor(Math.random() * snippets.length)]);
+            }
+            return resultArr.join(" ").split(/\s+/).slice(0, limit).join(" ");
+        }
+
+        function changeText() { init(); }
+
+        function init() {
+            document.getElementById('report-modal').style.display = 'none';
+            clearInterval(timerInterval);
+            isUIActive = false;
+            targetText = generateText();
+            wrapper.innerHTML = targetText.split('').map(char => `<span>${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+            charIndex = 0; errors = 0; streak = 0; startTime = null; input.value = ""; wpmHistory = [];
+            wordsLeftDisplay.innerText = targetText.split(/\s+/).length;
+            document.getElementById('streak-display').innerText = "0";
+            input.focus();
+            positionCaret();
+        }
+
+        function positionCaret() {
+            const spans = wrapper.querySelectorAll('span');
+            if (charIndex < spans.length) {
+                const t = spans[charIndex];
+                gsap.to(caret, { left: t.offsetLeft, top: t.offsetTop, height: t.offsetHeight, duration: 0.1 });
+                const box = document.getElementById('test-area');
+                if (t.offsetTop > box.offsetHeight / 2) gsap.to(wrapper, { y: -(t.offsetTop - box.offsetHeight / 2), duration: 0.3 });
+                else gsap.to(wrapper, { y: 0, duration: 0.3 });
+            }
+        }
+
+        input.addEventListener('input', () => {
+            if (!startTime) {
+                startTime = Date.now();
+                timerInterval = setInterval(() => {
+                    const time = (Date.now() - startTime) / 60000;
+                    wpmHistory.push(Math.round((charIndex / 5) / time) || 0);
+                }, 1000);
+            }
+            const typed = input.value, spans = wrapper.querySelectorAll('span'), char = typed[typed.length - 1];
+            if (charIndex < spans.length) {
+                if (char === targetText[charIndex]) { spans[charIndex].classList.add('correct'); streak++; playClick(false); }
+                else { spans[charIndex].classList.add('wrong'); errors++; streak = 0; playClick(true); }
+                document.getElementById('streak-display').innerText = streak;
+                charIndex++; positionCaret();
+                wordsLeftDisplay.innerText = targetText.slice(charIndex).split(' ').filter(x => x).length;
+                if (charIndex === targetText.length) showReport();
+            }
+        });
+
+        function showReport() {
+            clearInterval(timerInterval);
+            const time = (Date.now() - startTime) / 60000;
+            document.getElementById('final-wpm').innerText = Math.round((charIndex / 5) / time);
+            document.getElementById('final-acc').innerText = Math.round(((charIndex - errors) / charIndex) * 100) + "%";
+            document.getElementById('report-modal').style.display = 'flex';
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('wpmChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: wpmHistory.map((_, i) => i + 1),
+                    datasets: [{
+                        data: wpmHistory,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } } } }
+            });
+        }
+
+        function playClick(err) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.type = err ? 'square' : 'sine';
+            osc.frequency.setValueAtTime(err ? 120 : 750, audioCtx.currentTime);
+            gain.gain.setValueAtTime(parseFloat(volSlider.value), audioCtx.currentTime);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        document.body.addEventListener('click', (e) => { 
+            if (!isUIActive && !e.target.closest('.focus-guard')) input.focus(); 
+        });
+
+        init();
+    </script>
+</body>
+</html>
