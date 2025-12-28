@@ -1,43 +1,106 @@
-Velocity Typer | Neural Atmos Edition
-Velocity Typer is a high-performance, futuristic typing application designed for developers and speed enthusiasts. Built with a "Neural Atmos" aesthetic, it combines smooth GSAP animations, real-time performance tracking, and a glassmorphism interface to provide an immersive training experience.
+⚡ Velocity Typer
+Neural Atmos Edition
+
+Velocity Typer is a high-performance, futuristic typing application built for developers and speed enthusiasts.
+Designed with a Neural Atmos aesthetic, it blends smooth GSAP animations, real-time performance analytics, and a glassmorphism UI to create an immersive typing experience.
+
+🌌 Preview
+
+Dark. Fluid. Responsive. Built for flow.
 
 🚀 Key Features
-Neural Atmos UI: A high-end dark mode interface featuring animated background blobs that shift and accelerate based on your typing intensity.
+🧠 Neural Atmos UI
 
-Dynamic Performance Graph: Upon completion, view a detailed WPM Stream Graph (powered by Chart.js) that visualizes your speed consistency throughout the session.
+Premium dark-mode interface
 
-Holographic Feedback: * Shockwave Ripples: Subtle glowing ripples appear behind correctly typed characters.
+Animated neural background blobs that react to typing intensity
 
-Visual Shakes: Haptic-style screen shakes on errors to improve tactile awareness.
+Glassmorphism panels for a futuristic, clean look
 
-Developer-Centric Modes: Specialized practice modes for JavaScript and C++ to help master syntax and special characters.
+📊 Dynamic Performance Graph
 
-Focus Guard Technology: A custom focus-locking system that prevents UI glitches when selecting word limits or adjusting volumes.
+Detailed WPM Stream Graph after each session
 
-Neural Status Indicator: A live status bar that switches between "Neural Online" and "Analyzing Process..." in real-time.
+Powered by Chart.js
+
+Visualizes speed consistency and performance trends
+
+✨ Holographic Feedback System
+
+Shockwave Ripples – subtle glowing effects behind correctly typed characters
+
+Visual Shakes – haptic-style screen shake on errors for better muscle memory
+
+👨‍💻 Developer-Centric Practice Modes
+
+JavaScript Mode – master syntax, brackets, and operators
+
+C++ Mode – train precision with symbols and structured patterns
+
+🔒 Focus Guard Technology
+
+Custom focus-locking system
+
+Prevents UI glitches when switching word limits or adjusting sound levels
+
+📡 Neural Status Indicator
+
+Live system feedback:
+
+Neural Online
+
+Analyzing Process...
+
+Updates dynamically during typing sessions
 
 🛠️ Tech Stack
-Frontend: HTML5, CSS3, Tailwind CSS
-
-Animations: GSAP (GreenSock Animation Platform)
-
-Data Visualization: Chart.js
-
-Typography: JetBrains Mono & Plus Jakarta Sans
-
-Audio: Web Audio API (Oscillator-based haptic clicks)
-
+Layer	Technology
+Frontend	HTML5, CSS3, Tailwind CSS
+Animations	GSAP (GreenSock Animation Platform)
+Data Visualization	Chart.js
+Typography	JetBrains Mono, Plus Jakarta Sans
+Audio Feedback	Web Audio API (Oscillator-based haptic clicks)
 ⚙️ How to Run
-Since this is a specialized single-file neural application, no installation is required:
 
-Clone the repository:
+No installation required — single-file neural application ⚡
 
-Bash
-
+1️⃣ Clone the Repository
 git clone https://github.com/YOUR_USERNAME/velocity-typer.git
-Open index.html in any modern web browser.
 
-Ensure you have an internet connection to load the CDNs for Tailwind, GSAP, and Chart.js.
+2️⃣ Open the App
+
+Open index.html in any modern web browser
+
+Ensure an active internet connection (CDNs required)
+
+3️⃣ Start Typing
+
+Choose a mode
+
+Lock in focus
+
+Enter the neural flow 🚀
+
+🎯 Use Cases
+
+Typing speed training
+
+Developer syntax practice
+
+UI/UX animation inspiration
+
+GSAP & Chart.js learning reference
 
 👤 Credits
-Developed with ❤️ by Abhinay Nachankar.
+
+Developed with ❤️ by Abhinay Nachankar
+
+⭐ Support
+
+If you like this project:
+
+⭐ Star the repository
+
+🍴 Fork it
+
+🧠 Contribute improvements
